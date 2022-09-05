@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <HTTPClient.h>
-#include <Timemark.h>
 #include <WiFi.h>
 #include "temperature.hpp"
 #include "secrets.h"  // ssid, password, webhooks_key, event_name
@@ -160,11 +159,9 @@ void loop() {
         );
         bath_timer = millis() / 60000;
     }
-    ntc_average /= sampling_rate;
-    pot_average /= sampling_rate;
 
-    double ntc_resistance = maths::calc_resistance(ntc_average);
-    double pot_resistance = maths::calc_resistance(pot_average, false);
+    double ntc_resistance = maths::calc_resistance(bath_temperature);
+    double pot_resistance = maths::calc_resistance(heated_temperature, false);
 
     Serial.println(
       "NTC: " + String(ntc_resistance) + " Ω"
@@ -175,8 +172,8 @@ void loop() {
       + "\tPOT: " + String(maths::temperature_c(pot_resistance)) + " ℃"
     );
     Serial.println(
-      "NTC: " + String(maths::calc_temp(ntc_average)) + " ℃"
-      + "\tPOT: " + String(maths::calc_temp(pot_average, false)) + " ℃"
+      "NTC: " + String(maths::calc_temp(bath_temperature)) + " ℃"
+      + "\tPOT: " + String(maths::calc_temp(heated_temperature, false)) + " ℃"
     );
 
     if (heater_timer == 0 || heater_timer+10 < millis() / 60000 && heated_temperature < 60) {
