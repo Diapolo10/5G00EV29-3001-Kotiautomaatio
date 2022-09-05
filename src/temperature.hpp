@@ -8,16 +8,22 @@ namespace maths {
     static const float adc_calibration_temperature{25};  // Celsius
     static const int   adc_resistance{10000};            // Ohm
     static const float adc_resistance_tolerance{0.01};   // Percentage
+    static const float adc_bit_width{4095};  // 2^12 - 1
 
     static const int resistor{};              // Ohm
     static const float zero_celsius{273.15};  // Kelvin
 
-    double temperature_resistance(double adc) {
+    double calc_resistance(double adc_voltage) {
+        return 9300 / (4095 / adc_voltage - 1);
+        // return (adc_voltage / (3.3 - (3.3 / adc_bit_width) * adc_voltage) / adc_resistance); 
+    }
+
+    double temperature_resistance(int adc) {
         /**
          * @brief Calculates the change in resistance caused by temperature shifts
-         * adc is up to 10 bits + 1, or 1024
+         * adc is up to 12 bits, or 4095
          */
-        return (adc_resistance + resistor) / (1023/adc - 1);
+        return (adc_resistance + resistor) / (adc_bit_width/adc - 1);
     }
 
     double celsius_to_kelvin(double temp) {
@@ -57,5 +63,9 @@ namespace maths {
                 )
             )
         );
+    }
+
+    double calc_temp(double adc_voltage) {
+        return temperature_c(calc_resistance(adc_voltage));
     }
 }
