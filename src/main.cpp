@@ -11,16 +11,6 @@ static const String password{""};
 
 int samples[sampling_rate];
 
-double calibratedAnalogRead(uint8_t pin) {
-  double calibration_value = 0.15 / (3.3 / 4095);
-
-  int value = analogRead(pin);
-  if (value > 0)
-    return value + calibration_value;
-
-  return value;
-}
-
 void setup() {
     Serial.begin(115200);
 
@@ -45,7 +35,6 @@ void setup() {
 }
 
 void loop() {
-    //double calibration_value = 0.15 / (3.3 / 4095);
     double ntc_average = 0;
     double pot_average = 0;
     for (int idx{}; idx < sampling_rate; idx++) {
@@ -59,20 +48,8 @@ void loop() {
     double ntc_resistance = maths::calc_resistance(ntc_average);
     double pot_resistance = maths::calc_resistance(pot_average, false);
 
-    double ntc_value_in = 0;
-    double pot_value_in = 0;
-
-    ntc_value_in += calibratedAnalogRead(ntc_pin);
-    pot_value_in += calibratedAnalogRead(pot_pin);
-
-    Serial.println("\nanalogRead(ntc_pin): " + String(ntc_value_in * (3.3 / 4095)) + " V (" + String(ntc_value_in) + ")");
-    Serial.println("analogRead(pot_pin): " + String(pot_value_in * (3.3 / 4095)) + " V (" +  String(pot_value_in) + ")");
-
-    //Serial.println("\nNTC reading: " + String(ntc_average * (3.3 / 4095)) + " V (" + String(ntc_average) + ")");
-    //Serial.println("POT reading: " + String(pot_average * (3.3 / 4095)) + " V (" + String(pot_average) + ")");
-
-    /*Serial.println(
-      "\nNTC: " + String(ntc_resistance) + " Ω"
+    Serial.println(
+      "NTC: " + String(ntc_resistance) + " Ω"
       + "\tPOT: " + String(pot_resistance) + " Ω"
     );
     Serial.println(
@@ -82,7 +59,7 @@ void loop() {
     Serial.println(
       "NTC: " + String(maths::calc_temp(ntc_average)) + " ℃"
       + "\tPOT: " + String(maths::calc_temp(pot_average, false)) + " ℃"
-    );*/
+    );
 
     // Serial.println(maths::temperature_c(6180));  // 38 C
     // Serial.println(maths::temperature_c(2980));  // 60 C
