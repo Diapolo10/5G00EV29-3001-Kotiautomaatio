@@ -1,22 +1,25 @@
-
+#include <Arduino.h>
 #include <WiFi.h>
+#include "temperature.hpp"
 
-static double adc_value{};  // ohm
-static const int adc_resistance{10000};  // ohm
-static const int resistor{};  // ohm
+static const int ntc_pin{A0};
+static const int vd_power_pin{2};
+static const int sampling_rate{5};
 
-double temperature_resistance(double adc) {
-  return (adc_resistance + resistor) / (1023/adc - 1);
-}
+static double adc_value{};  // Ohm
 
 void setup() {
-  Serial.begin(115200);
+    Serial.begin(115200);
 
-  WiFi.mode(WIFI_STA);
-  WiFi.disconnect();
-  delay(100);
+    WiFi.mode(WIFI_STA);
+    WiFi.disconnect();
+    delay(100);
 
-  Serial.println("Setup done");
+    Serial.println("Setup done");
+
+    for (int idx{}; idx < 10; ++idx) {
+        Serial.println(maths::temperature_c(maths::temperature_resistance(1000 * idx)));
+    }
 }
 
 void loop() {
