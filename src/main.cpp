@@ -160,6 +160,24 @@ void loop() {
         );
         bath_timer = millis() / 60000;
     }
+    ntc_average /= sampling_rate;
+    pot_average /= sampling_rate;
+
+    double ntc_resistance = maths::calc_resistance(ntc_average);
+    double pot_resistance = maths::calc_resistance(pot_average, false);
+
+    Serial.println(
+      "NTC: " + String(ntc_resistance) + " Ω"
+      + "\tPOT: " + String(pot_resistance) + " Ω"
+    );
+    Serial.println(
+      "NTC: " + String(maths::temperature_c(ntc_resistance)) + " ℃"
+      + "\tPOT: " + String(maths::temperature_c(pot_resistance)) + " ℃"
+    );
+    Serial.println(
+      "NTC: " + String(maths::calc_temp(ntc_average)) + " ℃"
+      + "\tPOT: " + String(maths::calc_temp(pot_average, false)) + " ℃"
+    );
 
     if (heater_timer == 0 || heater_timer+10 < millis() / 60000 && heated_temperature < 60) {
         send_firewood_email(
@@ -172,6 +190,6 @@ void loop() {
     // Serial.println(maths::temperature_c(18400));  // 10 C
     // Serial.println(maths::temperature_c(667828));  // -50 C
     // Serial.println(maths::temperature_c(587.31));  // 105 C
-    
+
     delay(1000);
 }
