@@ -35,28 +35,37 @@ void setup() {
 }
 
 void loop() {
-    // int foo = analogRead(ntc_pin);
-    // Serial.println(foo);
-    // Serial.println(maths::calc_temp(foo));
-    // double temp = foo * (3.3 / 4095) - 1.65;
-    // Serial.println(temp);
-    // Serial.println(205 - temp * (155. / 1.65));
-    double average = 0;
+    double ntc_average = 0;
+    double pot_average = 0;
     for (int idx{}; idx < sampling_rate; idx++) {
-        average += analogRead(ntc_pin);
+        ntc_average += analogRead(ntc_pin);
+        pot_average += analogRead(pot_pin);
         delay(10);
     }
-    average /= sampling_rate;
+    ntc_average /= sampling_rate;
+    pot_average /= sampling_rate;
 
-    double resistance = maths::calc_resistance(average);
-    Serial.println(resistance);
-    Serial.println(maths::temperature_c(resistance));
-    Serial.println(maths::calc_temp(average));
+    double ntc_resistance = maths::calc_resistance(ntc_average);
+    double pot_resistance = maths::calc_resistance(pot_average, false);
+
+    Serial.println(
+      "NTC: " + String(ntc_resistance) + " Ω"
+      + "\tPOT: " + String(pot_resistance) + " Ω"
+    );
+    Serial.println(
+      "NTC: " + String(maths::temperature_c(ntc_resistance)) + " ℃"
+      + "\tPOT: " + String(maths::temperature_c(pot_resistance)) + " ℃"
+    );
+    Serial.println(
+      "NTC: " + String(maths::calc_temp(ntc_average)) + " ℃"
+      + "\tPOT: " + String(maths::calc_temp(pot_average, false)) + " ℃"
+    );
+
     // Serial.println(maths::temperature_c(6180));  // 38 C
     // Serial.println(maths::temperature_c(2980));  // 60 C
     // Serial.println(maths::temperature_c(18400));  // 10 C
     // Serial.println(maths::temperature_c(667828));  // -50 C
     // Serial.println(maths::temperature_c(587.31));  // 105 C
-    
+
     delay(1000);
 }
