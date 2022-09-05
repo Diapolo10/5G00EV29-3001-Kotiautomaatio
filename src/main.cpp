@@ -177,7 +177,7 @@ void loop() {
       + "\tPOT: " + String(maths::calc_temp(heated_temperature, false)) + " ℃"
     );
 
-    if (heater_timer == 0 || heater_timer+10 < millis() / 60000 && heated_temperature < 60) {
+    if ((heater_timer == 0 || heater_timer+10 < millis() / 60000) && heated_temperature < 60) {
         send_firewood_email(
             temperature_message()
         );
